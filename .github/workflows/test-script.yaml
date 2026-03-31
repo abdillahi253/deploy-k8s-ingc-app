@@ -1,0 +1,34 @@
+name: Test Deploy K8s Script
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Installer Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Exécuter le script de déploiement (simulation)
+        run: |
+          echo "Lance du script de déploiement"
+          sudo python3 full_script.py
+      
+      - name: Vérification de l'application (simulation)
+        run: |
+          echo "Vérification de l'application"
+          # Simule une vérification de l'application, par exemple en utilisant curl ou kubectl
+          echo "Simuler une requête HTTP à l'application"
+          # curl http://localhost:8080/healthz || exit 1
+      
+      - name: Nettoyage (simulation)
+        run: |
+          echo "Nettoyage des ressources déployées"
+          sudo python3 uninstall_script.py

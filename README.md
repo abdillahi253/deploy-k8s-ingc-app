@@ -5,21 +5,21 @@ Sujet d’Entretien Technique — Déploiement d’un Cluster Kubernetes + Ingre
 
 Ce script Python automatise l’installation d’un cluster k3s, la vérification de Traefik, l’installation de Helm et le déploiement d’une application via Helm.
 
+## Stack choisie et justification
+
+- **k3s** : Distribution Kubernetes légère, idéale pour les environnements de développement ou les machines à ressources limitées. Installation rapide et maintenance simplifiée.
+- **Traefik** : Ingress Controller moderne, facile à configurer, qui permet d'exposer les applications Kubernetes en HTTP/HTTPS avec gestion automatique des routes.
+- **Helm** : Gestionnaire de packages Kubernetes, facilite le déploiement, la mise à jour et la gestion des applications complexes via des charts.
+- **Python** : Utilisé pour l'automatisation du déploiement grâce à sa simplicité d'écriture de scripts et sa portabilité.
+
+Ce choix permet d'automatiser rapidement la mise en place d'un cluster Kubernetes fonctionnel, d'exposer facilement les applications, et de garantir une reproductibilité des déploiements.
+
 ## Prérequis
 
 - Système Linux (Debian/Ubuntu recommandé)
 - Accès sudo
 - Python 3.x installé
 - Connexion Internet
-
-## Fonctionnalités
-
-- Installe les dépendances système nécessaires (`curl`, `gpg`, etc.)
-- Installe k3s (Kubernetes léger)
-- Vérifie la présence de Traefik dans le cluster
-- Installe Helm (gestionnaire de packages Kubernetes)
-- Déploie une application Helm (`color`) depuis Docker Hub
-- Vérifie l’accessibilité de l’application via Traefik
 
 ## Utilisation
 
@@ -33,6 +33,20 @@ Ce script Python automatise l’installation d’un cluster k3s, la vérificatio
    sudo python3 deploy.py
    ```
 
+## Comment accéder à l'application
+
+- En local : utilise directement l’URL locale affichée à la fin de l’exécution du script.
+- Depuis un autre appareil : remplace "localhost" dans l’URL par l’adresse IP de la machine hébergeant le cluster.
+
+## Fonctionnalités
+
+- Installe les dépendances système nécessaires (`curl`, `gpg`, etc.)
+- Installe k3s (Kubernetes léger)
+- Vérifie la présence de Traefik dans le cluster
+- Installe Helm (gestionnaire de packages Kubernetes)
+- Déploie une application Helm (`color`) depuis Docker Hub
+- Vérifie l’accessibilité de l’application via Traefik
+
 ## Structure du script
 
 - `setup()` : Installe les paquets système nécessaires.
@@ -41,11 +55,6 @@ Ce script Python automatise l’installation d’un cluster k3s, la vérificatio
 - `install_helm()` : Installe Helm.
 - `deploy_app()` : Déploie l’application et vérifie son accessibilité via HTTP.
 - `main()` : Enchaîne toutes les étapes.
-
-## Personnalisation
-
-- Modifie l’URL du chart Helm ou le nom de l’application selon tes besoins.
-- Adapte les ports ou les ressources si nécessaire.
 
 ## Avertissement
 

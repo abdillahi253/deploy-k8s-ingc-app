@@ -60,7 +60,7 @@ def install_helm():
     # Vérifier si helm est déjà installé
     res = subprocess.run("helm version", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if res.returncode == 0:
-        print("Helm est déjà installé.")
+        print("✅ Helm est déjà installé.")
         return
     # Installer Helm via le script officiel
     subprocess.run("curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash", shell=True, check=True)
@@ -110,11 +110,8 @@ def main():
     setup()
     install_k3s()
     install_helm()
-    if check_traefik() is None:
-        print("❌ Traefik n'est pas disponible, le déploiement de l'application peut échouer.")
-    else:
-        port = check_traefik()
-        deploy_app(port)
+    port = check_traefik()
+    deploy_app(port)
 
 if __name__ == "__main__":
     main()
