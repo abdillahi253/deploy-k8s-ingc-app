@@ -33,10 +33,19 @@ Ce choix permet d'automatiser rapidement la mise en place d'un cluster Kubernete
    sudo python3 deploy.py
    ```
 
-## Comment accéder à l'application
+## Accès à l'application
 
-- En local : utilise directement l’URL locale affichée à la fin de l’exécution du script.
-- Depuis un autre appareil : remplace "localhost" dans l’URL par l’adresse IP de la machine hébergeant le cluster.
+- En local : ouvre l’URL locale affichée à la fin du script dans ton navigateur.
+- À distance : remplace "localhost" par l’adresse IP de la machine pour accéder à l’application depuis un autre appareil.
+
+## Chart Helm de l'application
+
+- Chart Helm public : [oci://registry-1.docker.io/abdillahi253/app](https://hub.docker.com/r/abdillahi253/app)
+
+Pour l'utiliser directement :
+```sh
+helm upgrade --install color oci://registry-1.docker.io/abdillahi253/app --version 0.1.0
+```
 
 ## Fonctionnalités
 
