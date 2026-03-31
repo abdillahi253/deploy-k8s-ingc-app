@@ -52,7 +52,7 @@ def install_helm():
         return
     subprocess.run("curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null", shell=True, check=True)
     subprocess.run("echo \"deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main\" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list", shell=True, check=True)
-    subprocess.run("sudo apt update && sudo apt install -y helm", shell=True, check=True)
+    subprocess.run("sudo apt-get update && sudo apt-get install helm", shell=True, check=True)
     result = subprocess.run("helm version", shell=True, check=True, capture_output=True, text=True)
     if "version" in result.stdout:
         print("Helm est installé.")
