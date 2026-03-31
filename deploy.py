@@ -16,9 +16,15 @@ def setup():
 
 def install_k3s():
     print("Installation de k3s...")
-    subprocess.run("sudo curl -sfL https://get.k3s.io | sh -", shell=True, check=True)
+    # Vérifier si k3s est déjà installé (kubectl présent et cluster accessible)
+    res = subprocess.run("kubectl get nodes", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if res.returncode == 0:
+        print("k3s (ou un cluster Kubernetes) est déjà installé et accessible.")
+        return
+    # Sinon, installer k3s
+    subprocess.run("curl -sfL https://get.k3s.io | sh -", shell=True, check=True)
     time.sleep(30)
-    result = subprocess.run("sudo kubectl get nodes", shell=True, check=True, capture_output=True, text=True)
+    result = subprocess.run("kubectl get nodes", shell=True, check=True, capture_output=True, text=True)
     if "Ready" in result.stdout:
         print("Cluster k3s est installé.")
     else:
@@ -50,9 +56,8 @@ def install_helm():
     if res.returncode == 0:
         print("Helm est déjà installé.")
         return
-    subprocess.run("curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null", shell=True, check=True)
-    subprocess.run("echo \"deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main\" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list", shell=True, check=True)
-    subprocess.run("sudo apt-get update && sudo apt-get install helm", shell=True, check=True)
+    # Installer Helm via le script officiel
+    subprocess.run("curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash", shell=True, check=True)
     result = subprocess.run("helm version", shell=True, check=True, capture_output=True, text=True)
     if "version" in result.stdout:
         print("Helm est installé.")
