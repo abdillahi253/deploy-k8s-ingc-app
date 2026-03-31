@@ -6,7 +6,7 @@
 
 ## 🛠️ Stack choisie
 
-- **k3s** : Kubernetes léger, rapide à installer, idéal pour dev/test.
+- **k3s** : Kubernetes léger, rapide à installer .
 - **Traefik** : Ingress moderne, simple à configurer pour exposer les apps.
 - **Helm** : Déploiement et gestion d’apps Kubernetes via des charts.
 - **Python** : Automatisation du déploiement, script simple et portable.
@@ -29,11 +29,11 @@
 1. Clone ce dépôt ou copie le script sur ta machine.
 2. Rends le script exécutable si besoin :
    ```sh
-   chmod +x deploy.py
+   chmod +x full_script.py
    ```
 3. Exécute le script avec Python :
    ```sh
-   sudo python3 deploy.py
+   sudo python3 full_script.py
    ```
 
 ---
@@ -75,6 +75,29 @@ helm upgrade --install color oci://registry-1.docker.io/abdillahi253/app --versi
 - `install_helm()` : Installe Helm.
 - `deploy_app()` : Déploie l’application et vérifie son accessibilité via HTTP.
 - `main()` : Enchaîne toutes les étapes.
+
+---
+
+## 🏗️ Architecture du déploiement
+
+```
+[Utilisateur]
+    |
+    v
+[Script Python] --(kubectl/helm)--> [Cluster k3s]
+    |                                 |
+    |                                 v
+    |                        [Traefik Ingress]
+    |                                 |
+    |                                 v
+    |                        [App Color déployée]
+    |                                 |
+    +-----------------------> [Accès HTTP/NodePort]
+```
+
+- Le script automatise l’installation de k3s, Traefik et l’application via Helm.
+- Traefik expose l’application sur un NodePort accessible en local ou à distance.
+- L’utilisateur interagit uniquement avec le script et l’URL générée.
 
 ---
 
