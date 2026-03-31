@@ -45,6 +45,11 @@ def check_traefik():
 
 def install_helm():
     print("Installation de Helm...")
+    # Vérifier si helm est déjà installé
+    res = subprocess.run("helm version", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if res.returncode == 0:
+        print("Helm est déjà installé.")
+        return
     subprocess.run("curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null", shell=True, check=True)
     subprocess.run("echo \"deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main\" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list", shell=True, check=True)
     subprocess.run("sudo apt update && sudo apt install -y helm", shell=True, check=True)
