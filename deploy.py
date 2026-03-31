@@ -25,9 +25,7 @@ def install_k3s():
     # Sinon, installer k3s
     subprocess.run("curl -sfL https://get.k3s.io | sh -", shell=True, check=True)
     time.sleep(30)
-    # Exporter le KUBECONFIG pour k3s (pour tous les shells)
-    os.environ['KUBECONFIG'] = '/etc/rancher/k3s/k3s.yaml'
-    result = subprocess.run("kubectl get nodes", shell=True, check=True, capture_output=True, text=True)
+    result = subprocess.run("kubectl get nodes", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
     if "Ready" in result.stdout:
         print("Cluster k3s est installé.")
     else:
@@ -35,8 +33,8 @@ def install_k3s():
 
 def check_traefik():
     print("Vérification de Traefik...")
-    pod = subprocess.run("sudo kubectl get pods -n kube-system", shell=True, check=True, capture_output=True, text=True)
-    svc = subprocess.run("sudo kubectl get svc -n kube-system", shell=True, check=True, capture_output=True, text=True)
+    pod = subprocess.run("sudo kubectl get pods -n kube-system", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
+    svc = subprocess.run("sudo kubectl get svc -n kube-system", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
     if "traefik" in pod.stdout and "traefik" in svc.stdout:
         print("Traefik est déployé.")
         # Chercher la ligne traefik dans svc.stdout et retourner le port exposé
@@ -70,12 +68,12 @@ def install_helm():
 def deploy_app():
     print("Déploiement de l'application Color...")
     # Vérifier si le chart Helm est accessible
-    show_chart = subprocess.run("helm show chart oci://registry-1.docker.io/abdillahi253/app --version 0.1.0", shell=True, capture_output=True, text=True)
+    show_chart = subprocess.run("helm show chart oci://registry-1.docker.io/abdillahi253/app --version 0.1.0", shell=True, capture_output=True, text=True, env=get_kube_env())
     if show_chart.returncode != 0:
         print("Erreur : le chart Helm n'est pas accessible ou n'existe pas à l'URL spécifiée.")
         print(show_chart.stderr)
         return
-    result = subprocess.run("helm upgrade --install color oci://registry-1.docker.io/abdillahi253/app --version 0.1.0", shell=True, capture_output=True, text=True)
+    result = subprocess.run("helm upgrade --install color oci://registry-1.docker.io/abdillahi253/app --version 0.1.0", shell=True, capture_output=True, text=True, env=get_kube_env())
     print(result.stderr)
     if result.returncode != 0:
         print("Erreur Helm :", result.stderr)
@@ -97,6 +95,11 @@ def deploy_app():
             print("L'application n'est pas disponible (code:", http_code, ")")
     else:
         print("Impossible de vérifier l'application Color car Traefik n'est pas disponible.")
+
+def get_kube_env():
+    env = os.environ.copy()
+    env['KUBECONFIG'] = '/etc/rancher/k3s/k3s.yaml'
+    return env
 
 def main():
     setup()
