@@ -34,6 +34,7 @@ def install_k3s():
 
 def check_traefik():
     print("3️⃣ Vérification de Traefik...")
+    time.sleep(30)  # Attendre un peu pour s'assurer que les ressources sont bien créées
     pod = subprocess.run("sudo kubectl get pods -n kube-system", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
     svc = subprocess.run("sudo kubectl get svc -n kube-system", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
     if "traefik" not in pod.stdout or "traefik" not in svc.stdout:
