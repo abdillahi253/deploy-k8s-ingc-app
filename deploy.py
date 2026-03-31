@@ -46,7 +46,7 @@ def check_traefik():
                 if len(parts) > 4:
                     print("Port exposé par Traefik:", parts[4])
                     ports_field = parts[4]
-                    match = re.search(r'80:(\\d+)/TCP', ports_field)
+                    match = re.search(r'80:(\d+)/TCP', ports_field)
                     if match:
                         node_port = match.group(1)
                         print("NodePort HTTP :", node_port)
