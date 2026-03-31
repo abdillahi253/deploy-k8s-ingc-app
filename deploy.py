@@ -1,3 +1,4 @@
+import os
 import subprocess, time
 
 def setup():
@@ -24,6 +25,8 @@ def install_k3s():
     # Sinon, installer k3s
     subprocess.run("curl -sfL https://get.k3s.io | sh -", shell=True, check=True)
     time.sleep(30)
+    # Exporter le KUBECONFIG pour k3s (pour tous les shells)
+    os.environ['KUBECONFIG'] = '/etc/rancher/k3s/k3s.yaml'
     result = subprocess.run("kubectl get nodes", shell=True, check=True, capture_output=True, text=True)
     if "Ready" in result.stdout:
         print("Cluster k3s est installé.")
