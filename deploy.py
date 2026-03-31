@@ -72,7 +72,11 @@ def deploy_app():
         print("Erreur : le chart Helm n'est pas accessible ou n'existe pas à l'URL spécifiée.")
         print(show_chart.stderr)
         return
-    subprocess.run("helm upgrade --install color oci://registry-1.docker.io/abdillahi253/app --version 0.1.0", shell=True, check=True)
+    result = subprocess.run("helm upgrade --install color oci://registry-1.docker.io/abdillahi253/app --version 0.1.0", shell=True, capture_output=True, text=True)
+    print(result.stderr)
+    if result.returncode != 0:
+        print("Erreur Helm :", result.stderr)
+        return
     time.sleep(30)
     port = check_traefik()
     if port:
