@@ -21,4 +21,3 @@ jobs:
           echo "# ATTENTION : Ce script installe k3s, helm et modifie le système."
           echo "# Pour un vrai test, décommente la ligne suivante :"
           sudo python3 deploy.py
-        working-directory: ./deploy-k8s-ingc-app
