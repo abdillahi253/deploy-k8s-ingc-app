@@ -6,7 +6,7 @@ def setup():
 
 def install_k3s():
     print("Installation de k3s...")
-    subprocess.run("curl -sfL https://get.k3s.io | sh -", shell=True, check=True)
+    subprocess.run("sudo curl -sfL https://get.k3s.io | sh -", shell=True, check=True)
     time.sleep(30)
     result = subprocess.run("sudo kubectl get nodes", shell=True, check=True, capture_output=True, text=True)
     if "Ready" in result.stdout:
