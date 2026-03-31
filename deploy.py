@@ -2,7 +2,17 @@ import subprocess, time
 
 def setup():
     print("Configuration de l'environnement...")
-    subprocess.run("sudo apt update && sudo apt install -y curl gpg apt-transport-https --yes", shell=True, check=True)
+    # Vérifier si curl, gpg et apt-transport-https sont installés
+    missing = []
+    for pkg in ["curl", "gpg", "apt-transport-https"]:
+        res = subprocess.run(f"dpkg -s {pkg}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if res.returncode != 0:
+            missing.append(pkg)
+    if missing:
+        print(f"Installation des paquets manquants : {' '.join(missing)}")
+        subprocess.run(f"sudo apt update && sudo apt install -y {' '.join(missing)}", shell=True, check=True)
+    else:
+        print("Tous les paquets nécessaires sont déjà installés.")
 
 def install_k3s():
     print("Installation de k3s...")
