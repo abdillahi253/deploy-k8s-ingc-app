@@ -71,7 +71,7 @@ def install_helm():
     else:
         print("❌ Installation de Helm échouée.")
 
-def deploy_app():
+def deploy_app(port):
     print("4️⃣ Déploiement de l'application Color...")
     # Vérifier si le chart Helm est accessible
     show_chart = subprocess.run("helm show chart oci://registry-1.docker.io/abdillahi253/app --version 0.1.0", shell=True, capture_output=True, text=True, env=get_kube_env())
@@ -85,8 +85,8 @@ def deploy_app():
         print("Erreur Helm :", result.stderr)
         return
     time.sleep(30)
-    # Récupère le code HTTP et le corps séparément
-    cmd = f'curl -s -o /tmp/body -w "%{{http_code}}" http://localhost:{check_traefik()}/color'
+    # Utilise le port passé en argument
+    cmd = f'curl -s -o /tmp/body -w "%{{http_code}}" http://localhost:{port}/color'
     result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
     http_code = result.stdout.strip()
     with open("/tmp/body", "r") as f:
@@ -94,8 +94,8 @@ def deploy_app():
     print("Code HTTP:", http_code)
     if http_code == "200":
         print("✅ L'application est disponible.")
-        print("URL d'accès : http://localhost:{port}/color".format(port=check_traefik()))
-        print("URL d'accès depuis l'extérieur : http://IP-machine:{port}/color".format(port=check_traefik()))
+        print(f"URL d'accès : http://localhost:{port}/color")
+        print(f"URL d'accès depuis l'extérieur : http://IP-machine:{port}/color")
     else:
         print("❌ L'application n'est pas disponible (code:", http_code, ")")
 
@@ -108,8 +108,9 @@ def main():
     setup()
     install_k3s()
     install_helm()
-    if check_traefik():
-        deploy_app()
+    port = check_traefik()
+    if port:
+        deploy_app(port)
     else:
         print("Arrêt du script : Traefik ou non disponible.")
 
