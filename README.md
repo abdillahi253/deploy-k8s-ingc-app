@@ -80,20 +80,7 @@ helm upgrade --install color oci://registry-1.docker.io/abdillahi253/app --versi
 
 ## 🏗️ Architecture du déploiement
 
-```
-[Utilisateur]
-    |
-    v
-[Script Python] --(kubectl/helm)--> [Cluster k3s]
-    |                                 |
-    |                                 v
-    |                        [Traefik Ingress]
-    |                                 |
-    |                                 v
-    |                        [App Color déployée]
-    |                                 |
-    +-----------------------> [Accès HTTP/NodePort]
-```
+![Architecture du projet](https://drive.google.com/uc?id=1MU92lANm5y1CBJMeoGTNPlHjJCrng-ec)
 
 - Le script automatise l’installation de k3s, Traefik et l’application via Helm.
 - Traefik expose l’application sur un NodePort accessible en local ou à distance.
