@@ -1,9 +1,7 @@
 import os
 import subprocess, time
-import re
 
 def setup():
-    print("0️⃣ Configuration de l'environnement...")
     # Vérifier si curl, gpg et apt-transport-https sont installés
     missing = []
     for pkg in ["curl", "gpg", "apt-transport-https"]:
@@ -22,39 +20,29 @@ def install_k3s():
     res = subprocess.run("kubectl get nodes", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if res.returncode == 0:
         print("✅ k3s (ou un cluster Kubernetes) est déjà installé et accessible.")
-        return
+        return True
     # Sinon, installer k3s
     subprocess.run("curl -sfL https://get.k3s.io | sh -", shell=True, check=True)
     time.sleep(30)
     result = subprocess.run("kubectl get nodes", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
     if "Ready" in result.stdout:
         print("✅ Cluster k3s est installé.")
+        return True
     else:
         print("❌ Installation de k3s échouée.")
+        return False
 
 def check_traefik():
     print("3️⃣ Vérification de Traefik...")
-    time.sleep(30)  # Attendre un peu pour s'assurer que les ressources sont bien créées
+    time.sleep(15)  # Attendre un peu pour s'assurer que les ressources sont bien créées
     pod = subprocess.run("sudo kubectl get pods -n kube-system", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
     svc = subprocess.run("sudo kubectl get svc -n kube-system", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
     if "traefik" not in pod.stdout or "traefik" not in svc.stdout:
         print("❌ Traefik n'est pas déployé.")
-        return None
-    print("✅ Traefik est déployé.")
-    for line in svc.stdout.splitlines():
-        if "traefik" in line:
-            print("Ligne Traefik:", line)
-            # Recherche tous les NodePorts HTTP (80:xxxxx/TCP)
-            matches = re.findall(r'80:(\d+)/TCP', line)
-            if matches:
-                node_port = matches[0]
-                print("NodePort HTTP :", node_port)
-                return node_port
-            else:
-                print("Aucun NodePort HTTP trouvé sur la ligne Traefik.")
-                return None
-    print("Aucune ligne Traefik trouvée dans les services.")
-    return None
+        return False
+    else:
+        print("✅ Traefik est déployé.")
+        return True
 
 def install_helm():
     print("2️⃣ Installation de Helm...")
@@ -62,14 +50,16 @@ def install_helm():
     res = subprocess.run("helm version", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if res.returncode == 0:
         print("✅ Helm est déjà installé.")
-        return
+        return True
     # Installer Helm via le script officiel
     subprocess.run("curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash", shell=True, check=True)
     result = subprocess.run("helm version", shell=True, check=True, capture_output=True, text=True)
     if "version" in result.stdout:
         print("✅ Helm est installé.")
+        return True
     else:
         print("❌ Installation de Helm échouée.")
+        return False
 
 def deploy_app(port):
     print("4️⃣ Déploiement de l'application Color...")
@@ -86,7 +76,7 @@ def deploy_app(port):
         return
     time.sleep(30)
     # Utilise le port passé en argument
-    cmd = f'curl -s -o /tmp/body -w "%{{http_code}}" http://localhost:{port}/color'
+    cmd = f'curl -s -o /tmp/body -w "%{{http_code}}" http://localhost/color'
     result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
     http_code = result.stdout.strip()
     with open("/tmp/body", "r") as f:
@@ -94,8 +84,8 @@ def deploy_app(port):
     print("Code HTTP:", http_code)
     if http_code == "200":
         print("✅ L'application est disponible.")
-        print(f"URL d'accès : http://localhost:{port}/color")
-        print(f"URL d'accès depuis l'extérieur : http://IP-machine:{port}/color")
+        print(f"URL d'accès : http://localhost/color")
+        print(f"URL d'accès depuis l'extérieur : http://IP-machine/color")
     else:
         print("❌ L'application n'est pas disponible (code:", http_code, ")")
 
@@ -106,13 +96,13 @@ def get_kube_env():
 
 def main():
     setup()
-    install_k3s()
-    install_helm()
-    port = check_traefik()
-    if port:
-        deploy_app(port)
-    else:
-        print("Arrêt du script : Traefik ou non disponible.")
+    if not install_k3s():
+        return
+    if not check_traefik():
+        return
+    if not install_helm():
+        return
+    deploy_app()
 
 if __name__ == "__main__":
     main()
