@@ -33,7 +33,7 @@ def install_k3s():
         return False
 
 def check_traefik():
-    print("3️⃣ Vérification de Traefik...")
+    print("2️⃣ Vérification de Traefik...")
     time.sleep(15)  # Attendre un peu pour s'assurer que les ressources sont bien créées
     pod = subprocess.run("sudo kubectl get pods -n kube-system", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
     svc = subprocess.run("sudo kubectl get svc -n kube-system", shell=True, check=True, capture_output=True, text=True, env=get_kube_env())
@@ -45,7 +45,7 @@ def check_traefik():
         return True
 
 def install_helm():
-    print("2️⃣ Installation de Helm...")
+    print("3️⃣ Installation de Helm...")
     # Vérifier si helm est déjà installé
     res = subprocess.run("helm version", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if res.returncode == 0:
@@ -61,7 +61,7 @@ def install_helm():
         print("❌ Installation de Helm échouée.")
         return False
 
-def deploy_app(port):
+def deploy_app():
     print("4️⃣ Déploiement de l'application Color...")
     # Vérifier si le chart Helm est accessible
     show_chart = subprocess.run("helm show chart oci://registry-1.docker.io/abdillahi253/app --version 0.1.0", shell=True, capture_output=True, text=True, env=get_kube_env())
